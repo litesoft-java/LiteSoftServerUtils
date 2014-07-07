@@ -1,0 +1,9 @@
+jar: LiteSoftServerUtils
+
+dependencies:
+- ../LiteSoftCommonFoundation
+
+resources: 
+- $source$
+- LICENSE
+
