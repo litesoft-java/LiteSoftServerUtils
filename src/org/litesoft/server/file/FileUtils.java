@@ -12,6 +12,20 @@ import java.util.*;
 public class FileUtils {
     public enum Change {New, Updated}
 
+    public static final FilenameFilter DIRECTORIES_ONLY = new FilenameFilter() {
+        @Override
+        public boolean accept( File dir, String name ) {
+            return new File( dir, name ).isDirectory();
+        }
+    };
+
+    public static final FilenameFilter FILES_ONLY = new FilenameFilter() {
+        @Override
+        public boolean accept( File dir, String name ) {
+            return new File( dir, name ).isFile();
+        }
+    };
+
     public static String currentWorkingDirectory() {
         return System.getProperty( "user.dir" );
     }
@@ -34,6 +48,10 @@ public class FileUtils {
             // Fall Thru
         }
         return null;
+    }
+
+    public static String getExtension( File pFile ) {
+        return (pFile == null) ? null : Paths.getExtension( pFile.getAbsolutePath() );
     }
 
     public static BufferedWriter createWriter( File pFile, boolean pAppend )
@@ -101,14 +119,14 @@ public class FileUtils {
         if ( pFile.exists() && areEqual( loadFile( pFile ), pContents ) ) {
             return null;
         }
-        File file = new File( pFile.getAbsolutePath() + ".new" );
+        File zNewFile = asNewFile( pFile );
         try {
-            IOUtils.storeBytes( pContents, createOutputStream( file ) );
+            IOUtils.storeBytes( pContents, createOutputStream( zNewFile ) );
         }
         catch ( IOException e ) {
-            throw new FileSystemException( "Unable to create OutputStream: " + file.getAbsolutePath() );
+            throw new FileSystemException( "Unable to create OutputStream: " + zNewFile.getAbsolutePath() );
         }
-        return rollIn( file, pFile, new File( pFile.getAbsolutePath() + ".bak" ) ) ? Change.Updated : Change.New;
+        return rollIn( zNewFile, pFile, asBackupFile( pFile ) ) ? Change.Updated : Change.New;
     }
 
     public static List<byte[]> loadFile( File pFile )
@@ -119,6 +137,20 @@ public class FileUtils {
                 throw new FileNotFoundException( pFile.getAbsolutePath() );
             }
             return IOUtils.loadBytes( createInputStream( pFile ) );
+        }
+        catch ( IOException e ) {
+            throw new FileSystemException( e );
+        }
+    }
+
+    public static String[] loadTextFile( File pFile )
+            throws FileSystemException {
+        Confirm.isNotNull( "File", pFile );
+        try {
+            if ( !pFile.exists() ) {
+                throw new FileNotFoundException( pFile.getAbsolutePath() );
+            }
+            return IOUtils.loadTextFile( createReader( pFile ) );
         }
         catch ( IOException e ) {
             throw new FileSystemException( e );
@@ -141,26 +173,24 @@ public class FileUtils {
         if ( pFile.exists() && Currently.areEqual( loadTextFile( pFile ), pLines ) ) {
             return null;
         }
-        File file = new File( pFile.getAbsolutePath() + ".new" );
-        addLines( file, false, pLines );
-        Change zChange = rollIn( file, pFile, new File( pFile.getAbsolutePath() + ".bak" ) ) ? Change.Updated : Change.New;
-        if ( pPrintStream != null ) {
-            pPrintStream.print( " --------------------> " + zChange + "!" );
-        }
+        File zNewFile = asNewFile( pFile );
+        addLines( zNewFile, false, pLines );
+        Change zChange = rollIn( zNewFile, pFile, asBackupFile( pFile ) ) ? Change.Updated : Change.New;
+        report( zChange, pPrintStream );
         return zChange;
     }
 
-    public static String[] loadTextFile( File pFile )
-            throws FileSystemException {
-        Confirm.isNotNull( "File", pFile );
-        try {
-            if ( !pFile.exists() ) {
-                throw new FileNotFoundException( pFile.getAbsolutePath() );
-            }
-            return IOUtils.loadTextFile( createReader( pFile ) );
-        }
-        catch ( IOException e ) {
-            throw new FileSystemException( e );
+    public static File asNewFile( File pFile ) {
+        return new File( pFile.getAbsolutePath() + ".new" );
+    }
+
+    public static File asBackupFile( File pFile ) {
+        return new File( pFile.getAbsolutePath() + ".bak" );
+    }
+
+    public static void report( Change pChange, PrintStream pPrintStream ) {
+        if ( pPrintStream != null ) {
+            pPrintStream.print( " --------------------> " + pChange + "!" );
         }
     }
 
