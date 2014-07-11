@@ -20,6 +20,22 @@ public class FileUtils {
         return Confirm.significant( "System.getProperty(\"" + pPropertyName + "\")", System.getProperty( pPropertyName ) );
     }
 
+    public static File canonicalFileOrNull( String pPath ) {
+        return Currently.isNotNullOrEmpty( pPath ) ? canonicalFileOrNull( new File( pPath ) ) : null;
+    }
+
+    public static File canonicalFileOrNull( File pFile ) {
+        try {
+            if ( pFile != null ) {
+                return pFile.getCanonicalFile();
+            }
+        }
+        catch ( IOException e ) {
+            // Fall Thru
+        }
+        return null;
+    }
+
     public static BufferedWriter createWriter( File pFile, boolean pAppend )
             throws IOException {
         Confirm.isNotNull( "File", pFile );
