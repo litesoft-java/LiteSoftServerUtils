@@ -36,6 +36,27 @@ public class IOCopier {
         }
     }
 
+    public void append( OutputStream pOutputStream ) {
+        Confirm.isNotNull( "OutputStream", pOutputStream );
+        // The follow ugly code is to ensure that the InputStream is closed appropriately on an error!
+        InputStream zInputStream;
+        try {
+            zInputStream = mISSupplier.get();
+        }
+        catch ( IOException e ) {
+            throw new FileSystemException( e );
+        }
+        try {
+            IOUtils.append( zInputStream, pOutputStream );
+        }
+        catch ( IOException e ) {
+            throw new FileSystemException( e );
+        }
+        finally {
+            Closeables.dispose( zInputStream );
+        }
+    }
+
     private IOSupplier<InputStream> mISSupplier;
 
     private IOCopier( IOSupplier<InputStream> pISSupplier ) {

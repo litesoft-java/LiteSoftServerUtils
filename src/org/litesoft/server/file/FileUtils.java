@@ -69,13 +69,23 @@ public class FileUtils {
     public static OutputStream createOutputStream( File pFile )
             throws IOException {
         Confirm.isNotNull( "File", pFile );
-        return new FileOutputStream( pFile );
+        return new FileOutputStream( insureParent( pFile ) );
     }
 
     public static InputStream createInputStream( File pFile )
             throws IOException {
         Confirm.isNotNull( "File", pFile );
         return new FileInputStream( pFile );
+    }
+
+    public static OutputStream asOutputStream( File pFile )
+            throws FileSystemException {
+        try {
+            return createOutputStream( pFile );
+        }
+        catch ( IOException e ) {
+            throw new FileSystemException( e );
+        }
     }
 
     public static File assertFileCreatable( File pExpectedFile )

@@ -9,6 +9,10 @@ import java.util.*;
 public class IOUtils {
     public static final String UTF_8 = "UTF-8";
 
+    public static BufferedOutputStream createBufferedOutputStream( OutputStream pOutputStream ) {
+        return new BufferedOutputStream( pOutputStream );
+    }
+
     public static BufferedReader createReader( InputStream pInputStream )
             throws IOException {
         return new BufferedReader( new InputStreamReader( pInputStream, UTF_8 ) );
@@ -120,9 +124,7 @@ public class IOUtils {
             throws IOException {
         Closeable zOutputStream = pOutputStream;
         try {
-            for ( IOBlock zBlock; null != (zBlock = IOBlock.from( pInputStream )); ) {
-                zBlock.to( pOutputStream );
-            }
+            append( pInputStream, pOutputStream );
             zOutputStream = null;
             pOutputStream.close();
         }
@@ -130,6 +132,13 @@ public class IOUtils {
             Closeables.dispose( pInputStream ); // Don't worry about the close error!
             Closeables.dispose( zOutputStream ); // Only if not already tried to close it!
             throw e;
+        }
+    }
+
+    public static void append( InputStream pInputStream, OutputStream pOutputStream )
+            throws IOException {
+        for ( IOBlock zBlock; null != (zBlock = IOBlock.from( pInputStream )); ) {
+            zBlock.to( pOutputStream );
         }
     }
 }
