@@ -10,23 +10,39 @@ import java.util.zip.*;
 public class ZipRelativeFileIterator extends RelativeFileIterator {
     private ZipFile mZipFile;
     private Enumeration<? extends ZipEntry> mEnumeration;
+    private ZipEntry mZipEntry;
 
     public ZipRelativeFileIterator( File pZipFile )
             throws IOException {
         mEnumeration = (mZipFile = new ZipFile( pZipFile )).entries();
+        mZipEntry = nextFile();
+    }
+
+    private ZipEntry nextFile() {
+        if ( mEnumeration != null ) {
+            while ( mEnumeration.hasMoreElements() ) {
+                ZipEntry zZipEntry = mEnumeration.nextElement();
+                if ( !zZipEntry.isDirectory() ) {
+                    return zZipEntry;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
     public boolean hasNext() {
-        return (mEnumeration != null) && mEnumeration.hasMoreElements();
+        return (mZipEntry != null);
     }
 
     @Override
     public RelativeFile next() {
-        if ( hasNext() ) {
-            return new ZipRelativeFile( mEnumeration.nextElement() );
+        if ( !hasNext() ) {
+            return super.next();
         }
-        return super.next();
+        RelativeFile zRelativeFile = new ZipRelativeFile( mZipEntry );
+        mZipEntry = nextFile();
+        return zRelativeFile;
     }
 
     @Override

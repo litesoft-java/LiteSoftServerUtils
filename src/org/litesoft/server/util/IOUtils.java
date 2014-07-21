@@ -1,6 +1,7 @@
 package org.litesoft.server.util;
 
 import org.litesoft.commonfoundation.exceptions.*;
+import org.litesoft.commonfoundation.typeutils.*;
 
 import java.io.*;
 import java.util.*;
@@ -65,7 +66,7 @@ public class IOUtils {
 
     public static List<byte[]> loadBytes( InputStream pInputStream ) {
         try {
-            List<byte[]> blocks = new LinkedList<byte[]>();
+            List<byte[]> blocks = Lists.newLinkedList();
             boolean closed = false;
             try {
                 for ( byte[] zBlock; null != (zBlock = readBlock( pInputStream )); ) {
@@ -107,11 +108,28 @@ public class IOUtils {
     public static void drain( InputStream pInputStream ) {
         try {
             while ( -1 != pInputStream.read() ) {
-                ;
+                // Empty Loop Body - All work in condition!
             }
         }
         catch ( IOException whatever ) {
             // Whatever
+        }
+    }
+
+    public static void copy( InputStream pInputStream, OutputStream pOutputStream )
+            throws IOException {
+        Closeable zOutputStream = pOutputStream;
+        try {
+            for ( IOBlock zBlock; null != (zBlock = IOBlock.from( pInputStream )); ) {
+                zBlock.to( pOutputStream );
+            }
+            zOutputStream = null;
+            pOutputStream.close();
+        }
+        catch ( IOException e ) {
+            Closeables.dispose( pInputStream ); // Don't worry about the close error!
+            Closeables.dispose( zOutputStream ); // Only if not already tried to close it!
+            throw e;
         }
     }
 }
