@@ -7,6 +7,7 @@ import org.litesoft.commonfoundation.typeutils.proxies.*;
 
 import java8.util.function.*;
 
+import java.io.*;
 import java.util.*;
 
 public class ArgsToMap {
@@ -75,6 +76,13 @@ public class ArgsToMap {
         return zKeys;
     }
 
+    public void reportRemainingKeyedKeys(String pWhat, PrintStream pPrintStream) {
+        List<String> zRemaining = getRemainingKeyedKeys();
+        if ( !zRemaining.isEmpty() ) {
+            pPrintStream.println(pWhat + " Arguments: " + zRemaining );
+        }
+    }
+
     public List<String> getRemainingNonKeyed() {
         ArrayList<String> zValues = Lists.newArrayList();
         for ( Entry zEntry : getEntries() ) {
@@ -83,6 +91,13 @@ public class ArgsToMap {
             }
         }
         return zValues;
+    }
+
+    public void assertNoRemainingNonKeyed() {
+        List<String> zRemaining = getRemainingNonKeyed();
+        if ( !zRemaining.isEmpty() ) {
+            throw new IllegalArgumentException( "Unexpected Arguments: " + zRemaining );
+        }
     }
 
     public String getNonKeyed( Supplier<String> pDefaultSupplier ) {
