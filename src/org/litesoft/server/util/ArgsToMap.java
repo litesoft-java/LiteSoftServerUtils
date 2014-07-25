@@ -169,6 +169,6 @@ public class ArgsToMap {
     }
 
     private String orDefault( String pValue, Supplier<String> pDefaultSupplier ) {
-        return (pValue != null) ? pValue : pDefaultSupplier.get();
+        return ((pValue != null) || (pDefaultSupplier == null)) ? pValue : pDefaultSupplier.get();
     }
 }
