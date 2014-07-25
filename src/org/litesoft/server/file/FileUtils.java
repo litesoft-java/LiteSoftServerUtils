@@ -78,6 +78,16 @@ public class FileUtils {
         return new FileInputStream( pFile );
     }
 
+    public static InputStream asInputStream( File pFile )
+            throws FileSystemException {
+        try {
+            return createInputStream( pFile );
+        }
+        catch ( IOException e ) {
+            throw new FileSystemException( e );
+        }
+    }
+
     public static OutputStream asOutputStream( File pFile )
             throws FileSystemException {
         try {
@@ -91,7 +101,7 @@ public class FileUtils {
     public static File assertFileExists( File pExpectedFile )
             throws FileSystemException {
         Confirm.isNotNull( "ExpectedFile", pExpectedFile );
-        if (!pExpectedFile.isFile()) {
+        if ( !pExpectedFile.isFile() ) {
             throw IllegalArgument.exception( pExpectedFile.getAbsolutePath(), "Not a file" );
         }
         return pExpectedFile;
