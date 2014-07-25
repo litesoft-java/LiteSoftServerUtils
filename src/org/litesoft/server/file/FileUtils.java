@@ -88,6 +88,15 @@ public class FileUtils {
         }
     }
 
+    public static File assertFileExists( File pExpectedFile )
+            throws FileSystemException {
+        Confirm.isNotNull( "ExpectedFile", pExpectedFile );
+        if (!pExpectedFile.isFile()) {
+            throw IllegalArgument.exception( pExpectedFile.getAbsolutePath(), "Not a file" );
+        }
+        return pExpectedFile;
+    }
+
     public static File assertFileCreatable( File pExpectedFile )
             throws FileSystemException {
         Confirm.isNotNull( "ExpectedFile", pExpectedFile );

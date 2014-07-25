@@ -78,4 +78,15 @@ public class DirectoryUtils {
             }
         }
     }
+
+    public static File findAncestralFile( File pFromDir, String pFilename ) {
+        pFilename = Confirm.significant( "Filename", pFilename );
+        File zFile;
+        while ( !(zFile = new File( pFromDir, pFilename )).isFile() ) {
+            if ( null == (pFromDir = pFromDir.getParentFile()) ) {
+                return null;
+            }
+        }
+        return zFile;
+    }
 }
