@@ -79,7 +79,22 @@ public class DirectoryUtils {
         }
     }
 
-    public static File findAncestralFile( File pFromDir, String pFilename ) {
+    public static File findAncestralFile( File pFromDir, String pFilename, String... pFilePrefixes ) {
+        Confirm.isNotNull( "FromDir", pFromDir );
+        pFilename = Confirm.significant( "Filename", pFilename );
+        if (Currently.isNullOrEmpty( pFilePrefixes )) {
+            return findFileAncestrally( pFromDir, pFilename );
+        }
+        for ( String zPrefix : pFilePrefixes ) {
+            File zFile = findFileAncestrally( pFromDir, zPrefix + pFilename );
+            if (zFile != null) {
+                return zFile;
+            }
+        }
+        return null;
+    }
+
+    private static File findFileAncestrally( File pFromDir, String pFilename ) {
         pFilename = Confirm.significant( "Filename", pFilename );
         File zFile;
         while ( !(zFile = new File( pFromDir, pFilename )).isFile() ) {
