@@ -1,9 +1,12 @@
 jar: LiteSoftServerUtils
 
+
+resources: 
+- LICENSE
+
 dependencies:
 - ../LiteSoftCommonFoundation
 
-resources: 
-- $source$
-- LICENSE
+classpath:
+- ../LiteSoftServerUtils/libs|servlet*.jar
 
