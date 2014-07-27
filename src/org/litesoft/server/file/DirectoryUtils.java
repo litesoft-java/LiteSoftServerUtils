@@ -2,9 +2,10 @@
 package org.litesoft.server.file;
 
 import org.litesoft.commonfoundation.base.*;
-import org.litesoft.commonfoundation.exceptions.*;
+import org.litesoft.commonfoundation.exceptions.FileSystemException;
 
 import java.io.*;
+import java.nio.file.*;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class DirectoryUtils {
@@ -47,6 +48,37 @@ public class DirectoryUtils {
         return pDirectory.isDirectory() && pDirectory.canRead() && pDirectory.canWrite();
     }
 
+    public static boolean isDirectory( File pDirectory ) {
+        if ( pDirectory != null ) {
+            if ( pDirectory.isDirectory() ) {
+                return true;
+            }
+            if ( isSymLinkToDirectory( pDirectory ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSymLinkToDirectory( File pDirectory ) {
+        Path zPath = pDirectory.toPath();
+        boolean zSymbolicLink = Files.isSymbolicLink( zPath );
+        if ( zSymbolicLink ) {
+            File zDirectory = symbolicLinkToFile( zPath );
+            return isDirectory( zDirectory );
+        }
+        return false;
+    }
+
+    private static File symbolicLinkToFile( Path pPath ) {
+        try {
+            return Files.readSymbolicLink( pPath ).toFile();
+        }
+        catch ( IOException e ) {
+            return null;
+        }
+    }
+
     public static void purge( File pDirectory )
             throws FileSystemException {
         Confirm.isNotNull( "Directory", pDirectory );
@@ -82,12 +114,12 @@ public class DirectoryUtils {
     public static File findAncestralFile( File pFromDir, String pFilename, String... pFilePrefixes ) {
         Confirm.isNotNull( "FromDir", pFromDir );
         pFilename = Confirm.significant( "Filename", pFilename );
-        if (Currently.isNullOrEmpty( pFilePrefixes )) {
+        if ( Currently.isNullOrEmpty( pFilePrefixes ) ) {
             return findFileAncestrally( pFromDir, pFilename );
         }
         for ( String zPrefix : pFilePrefixes ) {
             File zFile = findFileAncestrally( pFromDir, zPrefix + pFilename );
-            if (zFile != null) {
+            if ( zFile != null ) {
                 return zFile;
             }
         }
