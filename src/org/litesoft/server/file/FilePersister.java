@@ -20,6 +20,12 @@ public class FilePersister extends Persister {
     }
 
     @Override
+    public boolean fileExists( String pPath )
+            throws FileSystemException {
+        return new File( mRootDir, pPath ).isFile();
+    }
+
+    @Override
     public String[] getTextFile( String pPath )
             throws FileSystemException {
         return FileUtils.loadTextFile( new File( mRootDir, pPath ) );

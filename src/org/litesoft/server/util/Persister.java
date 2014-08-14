@@ -10,6 +10,9 @@ import java.io.*;
  * Note: For most read and write operations (and copy) it should be assumed that the whole file will be loaded in to memory!
  */
 public abstract class Persister {
+    abstract public boolean fileExists( String pPath )
+            throws FileSystemException;
+
     abstract public String[] getTextFile( String pPath )
             throws FileSystemException;
 
