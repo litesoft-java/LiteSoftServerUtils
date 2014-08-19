@@ -44,7 +44,9 @@ public class ConsoleTextFile implements Console {
         Closeable zCloseable = mWriter;
         mWriter = null;
         try {
-            zCloseable.close();
+            if ( zCloseable != null ) {
+                zCloseable.close();
+            }
         }
         catch ( IOException e ) {
             throw convert( "Closing", e );
