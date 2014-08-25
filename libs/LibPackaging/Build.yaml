@@ -1,0 +1,8 @@
+jar: LiteSoftServerLibs
+
+resouces: 
+- ../../LICENSE
+
+classpath:
+- ../commons|**.jar
+- ../http|**.jar
