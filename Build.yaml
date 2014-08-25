@@ -4,9 +4,9 @@ jar: LiteSoftServerUtils
 resources: 
 - LICENSE
 
-dependencies:
+compiledependencies:
 - ../LiteSoftCommonFoundation
 
-classpath:
+compileclasspath:
 - ../LiteSoftServerUtils/libs|servlet*.jar
 
