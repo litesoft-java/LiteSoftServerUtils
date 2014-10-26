@@ -4,6 +4,9 @@ import org.litesoft.commonfoundation.exceptions.*;
 
 import java.io.*;
 
+/**
+ * Support for Closeable, handling nulls - both quite and converting from IOException to WrappedIOException
+ */
 public class Closeables {
     public static void dispose( Closeable pCloseable ) {
         if ( pCloseable != null ) {
