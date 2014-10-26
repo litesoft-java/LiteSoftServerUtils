@@ -5,6 +5,9 @@ import org.litesoft.commonfoundation.exceptions.*;
 
 import java.io.*;
 
+/**
+ * Implementation of the Console interface that saves the output of the "Console" to a Text File.
+ */
 public class ConsoleTextFile implements Console {
 
     private final String mFileName;
