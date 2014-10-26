@@ -76,10 +76,10 @@ public class ArgsToMap {
         return zKeys;
     }
 
-    public void reportRemainingKeyedKeys(String pWhat, PrintStream pPrintStream) {
+    public void reportRemainingKeyedKeys( String pWhat, PrintStream pPrintStream ) {
         List<String> zRemaining = getRemainingKeyedKeys();
         if ( !zRemaining.isEmpty() ) {
-            pPrintStream.println(pWhat + " Arguments: " + zRemaining );
+            pPrintStream.println( pWhat + " Arguments: " + zRemaining );
         }
     }
 
@@ -142,7 +142,19 @@ public class ArgsToMap {
         return null;
     }
 
-    public String getAnyOf( String pKey, String pDefault, Object... pToStringKeys ) {
+    public String getAnyOf( String pKey, String pDefault, Object pToStringKeyOption0, Object... pAdditionalToStringKeys ) {
+        List<Object> zList = Lists.append( Lists.newArrayList( pToStringKeyOption0 ), (Object[]) pAdditionalToStringKeys );
+        return getAnyOf( pKey, pDefault, zList );
+    }
+
+    public String getAnyOf( String pKey, String pDefault, Object[] pToStringKeys ) {
+        if ( Currently.isNullOrEmpty( pToStringKeys ) ) {
+            return get( pKey, pDefault );
+        }
+        return getAnyOf( pKey, pDefault, Lists.newArrayList( pToStringKeys ) );
+    }
+
+    public String getAnyOf( String pKey, String pDefault, List<?> pToStringKeys ) {
         String zValue = get( pKey );
         if ( zValue != null ) {
             return zValue;
